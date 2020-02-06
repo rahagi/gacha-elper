@@ -1,10 +1,10 @@
 # gacha-elper
 
-small utility to help automate repetitive gacha/grinding games.
+small utility to help automate repetitive tasks in gacha/grinding weaboo games.
 
 ## Usage
 
-```{python}
+```python
 from src.gacha_elper import GachaElper as Elp
 ...
 ```
@@ -12,4 +12,4 @@ see `examples`
 
 ## License
 
-see LICENSE
+see [LICENSE](https://github.com/cytopz/gacha-elper/blob/master/LICENSE)
