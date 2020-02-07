@@ -34,7 +34,6 @@ def start():
         Elp.wait(35)
         while not Elp.find('trust'):
             Elp.wait(5)
-            print('still battling. . .')
         Elp.tap(Point(512, 512))
         Elp.wait(7.5)
         Elp.tap(buttons['back'])
@@ -43,6 +42,6 @@ def start():
         if gt_5 and gt_5_count == 2:
             gt_5 = not gt_5
             gt_5_count = 0
-        else:
+        elif not gt_5:
             gt_5 = not gt_5
 
