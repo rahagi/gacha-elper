@@ -37,4 +37,11 @@ def start():
         Elp.tap(Point(512, 512))
         Elp.wait(7.5)
         Elp.tap(buttons['back'])
-        gt_5 = not gt_5
+        if gt_5:
+            gt_5_count += 1
+        if gt_5 and gt_5_count == 2:
+            gt_5 = not gt_5
+            gt_5_count = 0
+        else:
+            gt_5 = not gt_5
+
