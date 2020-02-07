@@ -17,7 +17,7 @@ class Point:
         return spatial.distance.euclidean(coord1, coord2) < 10
 
     def __hash__(self):
-        return hash((self.x, self.y, self.mob, self.siren))
+        return hash((self.x, self.y))
 
     def __repr__(self):
         return f'({self.x}, {self.y})'
