@@ -23,6 +23,7 @@ def start():
     Elp.wait(1.5)
     Elp.tap(buttons['operation_map'])
     gt_5 = True
+    gt_5_count = 0
     while True:
         current_map = buttons['gt_5'] if gt_5 else buttons['gt_6']
         Elp.tap(current_map)
