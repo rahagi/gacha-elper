@@ -2,11 +2,10 @@ import time
 import subprocess
 import cv2
 import numpy as np
-from datetime import datetime
 from scipy import spatial
-from src.adb import Adb
+from .adb import Adb
 
-class Point:
+class Coordinate:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -22,7 +21,7 @@ class Point:
     def __repr__(self):
         return f'({self.x}, {self.y})'
 
-class GachaElper:
+class Elper:
     SIMILARITY_VALUE = 0.8
     CURRENT_SCREEN = np.array([[]])
 
@@ -45,21 +44,32 @@ class GachaElper:
     def __find(self, template, similarity=SIMILARITY_VALUE):
         img_template = cv2.imread(f'assets/{template}.png', 0)
         match = cv2.matchTemplate(self.CURRENT_SCREEN, img_template, cv2.TM_CCOEFF_NORMED)
-        value, location = cv2.minMaxLoc(match)[1], cv2.minMaxLoc(match)[3]
+        value, coord = cv2.minMaxLoc(match)[1], cv2.minMaxLoc(match)[3]
         if value >= similarity:
-            return Point(location[0], location[1])
+            return Point(coord[0], coord[1])
         return None
 
     @classmethod
     def __find_multi(self, template, similarity=SIMILARITY_VALUE):
         img_template = cv2.imread(f'assets/{template}.png', 0)
         match = cv2.matchTemplate(self.CURRENT_SCREEN, img_template, cv2.TM_CCOEFF_NORMED)
-        locations = np.where(match >= similarity)
-        locations = list(zip(locations[1], locations[0]))
-        fixed_locs = self.fix_locs([Point(x, y) for x, y in locations])
-        if fixed_locs:
-            return fixed_locs
+        coords = np.where(match >= similarity)
+        coords = list(zip(coords[1], coords[0]))
+        fixed_coords = self.fix_coords([Point(x, y) for x, y in coords])
+        if fixed_coords:
+            return fixed_coords
         return []
+
+    @classmethod
+    def __fix_coords(self, coords):
+        try:
+            fixed_coords = [coords[0]]
+            for coord in coords:
+                if coord not in fixed_coords:
+                    fixed_coords.append(coord)
+            return fixed_coords
+        except IndexError:
+            return []
 
     @classmethod
     def find(self, template, mode=0, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, update_screen=True):
@@ -81,44 +91,24 @@ class GachaElper:
         return result
 
     @classmethod
-    def tap(self, dimension, delay=1.5):
-        Adb.shell(f'input tap {dimension.x} {dimension.y}')
+    def tap(self, coord, delay=1.5):
+        Adb.shell(f'input tap {coord.x} {coord.y}')
         self.wait(delay)
 
     @classmethod
-    def swipe(self, dimension1, dimension2, duration=250):
-        Adb.shell(f'input swipe {dimension1.x} {dimension1.y} {dimension2.x} {dimension2.y} {duration}')
-
-    @classmethod
-    def fix_locs(self, locs):
-        try:
-            fixed_locs = [locs[0]]
-            for loc in locs:
-                if loc not in fixed_locs:
-                    fixed_locs.append(loc)
-            return fixed_locs
-        except IndexError:
-            return []
+    def swipe(self, coord1, coord2, duration=250):
+        Adb.shell(f'input swipe {coord1.x} {coord1.y} {coord2.x} {coord2.y} {duration}')
 
     @classmethod
     def find_closest(self, coords, coord):
         x, y = coords[spatial.KDTree(coords).query(coord)[1]]
         return Point(x, y)
+    
+    @classmethod
+    def wait_until_find(self, template, sim_from=self.SIMILARITY_VALUE, sim_to=self.SIMILARITY_VALUE, interval=0):
+        while not self.find(template, sim_from=sim_from, sim_to=sim_to):
+            self.wait(interval)
 
     @classmethod
     def wait(self, duration):
         time.sleep(duration)
-    
-    @classmethod
-    def time_now(self):
-        return datetime.now()
-
-    @classmethod
-    def time_elapsed(self, end, start):
-        hours, remainder = divmod((end-start).seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        return {
-            'hours': hours,
-            'minutes': minutes,
-            'seconds': seconds
-        }

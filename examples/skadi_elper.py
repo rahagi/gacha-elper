@@ -1,5 +1,5 @@
-from src.gacha_elper import GachaElper as Elp
-from src.gacha_elper import Point
+from gacha_elper.elper import Elper as Elp
+from gacha_elper.elper import Point
 
 buttons = {
     'home1': Point(215, 30),
