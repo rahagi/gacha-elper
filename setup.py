@@ -14,10 +14,11 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=['opencv-python', 'scipy', 'numpy'],
     classifier=[
+        "Development Status :: 3 - Alpha"
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: OS Independent",
         "Topic :: Games/Entertainment"
+        "License :: OSI Approved :: MIT License"
     ]
-    license='GPLv3',
     python_requires='>=3.6'
 )
