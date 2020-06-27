@@ -1,7 +1,10 @@
 import time
 import subprocess
+import os
+import sys
 import cv2
 import numpy as np
+from random import randint
 from scipy import spatial
 from .adb import Adb
 
@@ -21,7 +24,12 @@ class Coordinate:
     def __repr__(self):
         return f'({self.x}, {self.y})'
 
+    def randomize(self, radius=15):
+        self.x += randint(-radius, radius)
+        self.y += randint(-radius, radius)
+
 class Elper:
+    CURRENT_DIR = os.path.split(sys.argv[0])[0]
     SIMILARITY_VALUE = 0.8
     CURRENT_SCREEN = np.array([[]])
 
@@ -42,20 +50,20 @@ class Elper:
 
     @classmethod
     def __find(self, template, similarity=SIMILARITY_VALUE):
-        img_template = cv2.imread(f'assets/{template}.png', 0)
+        img_template = cv2.imread(f'{self.CURRENT_DIR}/assets/{template}.png', 0)
         match = cv2.matchTemplate(self.CURRENT_SCREEN, img_template, cv2.TM_CCOEFF_NORMED)
         value, coord = cv2.minMaxLoc(match)[1], cv2.minMaxLoc(match)[3]
         if value >= similarity:
-            return Point(coord[0], coord[1])
+            return Coordinate(coord[0], coord[1])
         return None
 
     @classmethod
     def __find_multi(self, template, similarity=SIMILARITY_VALUE):
-        img_template = cv2.imread(f'assets/{template}.png', 0)
+        img_template = cv2.imread(f'{self.CURRENT_DIR}/assets/{template}.png', 0)
         match = cv2.matchTemplate(self.CURRENT_SCREEN, img_template, cv2.TM_CCOEFF_NORMED)
         coords = np.where(match >= similarity)
         coords = list(zip(coords[1], coords[0]))
-        fixed_coords = self.fix_coords([Point(x, y) for x, y in coords])
+        fixed_coords = self.fix_coords([Coordinate(x, y) for x, y in coords])
         if fixed_coords:
             return fixed_coords
         return []
@@ -91,21 +99,24 @@ class Elper:
         return result
 
     @classmethod
-    def tap(self, coord, delay=1.5):
+    def tap(self, coord, delay=1.5, randomize=True, random_radius=15):
+        if randomize:
+            coord.randomize(radius=random_radius)
         Adb.shell(f'input tap {coord.x} {coord.y}')
         self.wait(delay)
 
     @classmethod
-    def swipe(self, coord1, coord2, duration=250):
+    def swipe(self, coord1, coord2, duration=250, delay=1.5):
         Adb.shell(f'input swipe {coord1.x} {coord1.y} {coord2.x} {coord2.y} {duration}')
+        self.wait(delay)
 
     @classmethod
     def find_closest(self, coords, coord):
         x, y = coords[spatial.KDTree(coords).query(coord)[1]]
-        return Point(x, y)
+        return Coordinate(x, y)
     
     @classmethod
-    def wait_until_find(self, template, sim_from=self.SIMILARITY_VALUE, sim_to=self.SIMILARITY_VALUE, interval=0):
+    def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, interval=0):
         while not self.find(template, sim_from=sim_from, sim_to=sim_to):
             self.wait(interval)
 

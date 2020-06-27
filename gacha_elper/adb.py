@@ -9,7 +9,7 @@ class Adb:
     @classmethod
     def exec_out(self, cmd):
         return subprocess.Popen(
-            f'adb exec-out {cmd}', stdout=subprocess.PIPE
+            f'adb exec-out {cmd}'.split(' '), stdout=subprocess.PIPE
         ).communicate()[0]
 
     @classmethod
