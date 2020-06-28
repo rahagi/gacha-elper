@@ -5,7 +5,7 @@ with open('docs/README.md') as fh:
 
 setuptools.setup(
     name='gacha-elper',
-    version='0.0.2',
+    version='0.1',
     author='cytopz',
     author_email='cytopz@protonmail.com',
     description='A small utility to help automate mobile (Android) video games',
