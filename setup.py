@@ -13,7 +13,7 @@ setuptools.setup(
     url='https://github.com/cytopz/gacha-elper',
     packages=setuptools.find_packages(),
     install_requires=['opencv-python', 'scipy', 'numpy'],
-    classifier=[
+    classifiers=[
         "Development Status :: 3 - Alpha"
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: OS Independent",
