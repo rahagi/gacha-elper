@@ -100,9 +100,11 @@ class Elper:
 
     @classmethod
     def tap(self, coord, delay=1.5, randomize=True, random_radius=15):
+        old_x, old_y = coord.x, coord.y
         if randomize:
             coord.randomize(radius=random_radius)
         Adb.shell(f'input tap {coord.x} {coord.y}')
+        coord.x, coord.y = old_x, old_y
         self.wait(delay)
 
     @classmethod
