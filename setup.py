@@ -2,6 +2,7 @@ import setuptools
 
 with open('README.md') as fh:
     long_description = fh.read()
+long_description_content_type="text/markdown"
 
 setuptools.setup(
     name='gacha-elper',
