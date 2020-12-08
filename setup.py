@@ -1,10 +1,12 @@
 import setuptools
+import gacha_elper
 
 LONG_DESC = open('README.md').read()
+VERSION = gacha_elper.__version__
 
 setuptools.setup(
     name='gacha-elper',
-    version='0.1',
+    version=VERSION,
     author='cytopz',
     author_email='cytopz@protonmail.com',
     description='A small utility to help automate mobile (Android) video games',
