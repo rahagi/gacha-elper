@@ -1,8 +1,6 @@
 import setuptools
 
-with open('README.md') as fh:
-    long_description = fh.read()
-long_description_content_type="text/markdown"
+LONG_DESC = open('README.md').read()
 
 setuptools.setup(
     name='gacha-elper',
@@ -10,7 +8,8 @@ setuptools.setup(
     author='cytopz',
     author_email='cytopz@protonmail.com',
     description='A small utility to help automate mobile (Android) video games',
-    long_description=long_description,
+    long_description=LONG_DESC,
+    long_description_content_type="text/markdown",
     url='https://github.com/cytopz/gacha-elper',
     packages=setuptools.find_packages(),
     install_requires=['opencv-python', 'scipy', 'numpy'],
