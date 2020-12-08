@@ -3,6 +3,11 @@ import sys
 
 class Adb:
     @classmethod
+    def list_devices(self):
+        devices = subprocess.Popen('adb devices'.split(' '), stdout=subprocess.PIPE).communicate()[0]
+        return [x.replace('\t', ' ') for x in devices.decode('utf-8').replace('\n\n', '').split('\n')][1:]
+
+    @classmethod
     def connect(self, address, port):
         subprocess.call(f'adb connect {address}:{port}'.split(' '))
 
