@@ -34,8 +34,10 @@ class Elper:
     CURRENT_SCREEN = np.array([[]])
 
     @classmethod
-    def __update_screen(self, bgr=0):
+    def __update_screen(self, bgr=0, crop_from=None, crop_to=None):
         self.CURRENT_SCREEN = self.__get_current_screen()
+        if crop_from and crop_to:
+            self.CURRENT_SCREEN = self.CURRENT_SCREEN[crop_from.y:crop_to.y, crop_from.x:crop_to.x]
 
     @classmethod
     def __get_current_screen(self, bgr=0):
@@ -80,10 +82,10 @@ class Elper:
             return []
 
     @classmethod
-    def find(self, template, mode=0, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, update_screen=True):
+    def find(self, template, mode=0, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, crop_from=None, crop_to=None, update_screen=True):
         result = []
         if update_screen or not self.CURRENT_SCREEN.any():
-            self.__update_screen()
+            self.__update_screen(crop_from=crop_from, crop_to=crop_to)
         while sim_from >= sim_to:
             if mode == 0:
                 result = self.__find(template, sim_from)
@@ -118,8 +120,8 @@ class Elper:
         return Coordinate(x, y)
     
     @classmethod
-    def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, interval=0):
-        while not self.find(template, sim_from=sim_from, sim_to=sim_to):
+    def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, crop_from=None, crop_to=None, interval=0):
+        while not self.find(template, sim_from=sim_from, sim_to=sim_to, crop_from=crop_from, crop_to=crop_to):
             self.wait(interval)
 
     @classmethod
