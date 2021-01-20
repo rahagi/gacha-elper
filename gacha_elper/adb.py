@@ -9,7 +9,8 @@ class Adb:
 
     @classmethod
     def connect(self, address, port):
-        subprocess.call(f'adb connect {address}:{port}'.split(' '))
+        return subprocess.Popen(f'adb connect {address}:{port}'.split(' '),
+                stdout=subprocess.PIPE).communicate()[0]
 
     @classmethod
     def exec_out(self, cmd):
