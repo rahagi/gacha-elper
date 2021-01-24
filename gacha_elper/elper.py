@@ -29,7 +29,7 @@ class Coordinate:
         self.y += randint(-radius, radius)
 
 class Elper:
-    CURRENT_DIR = os.path.split(sys.argv[0])[0]
+    CURRENT_DIR = os.path.split(sys.argv[0])[0] or '.'
     SIMILARITY_VALUE = 0.8
     CURRENT_SCREEN = np.array([[]])
 
