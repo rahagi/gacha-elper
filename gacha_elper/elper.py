@@ -24,7 +24,7 @@ class Coordinate:
     def __repr__(self):
         return f'({self.x}, {self.y})'
 
-    def randomize(self, radius=15):
+    def randomize(self, radius=3):
         self.x += randint(-radius, radius)
         self.y += randint(-radius, radius)
 
@@ -43,7 +43,7 @@ class Elper:
     def __get_current_screen(self, bgr=0):
         img = None
         while img is None:
-            img = cv2.imdecode(np.fromstring(Adb.exec_out('screencap -p'), dtype=np.uint8), bgr)
+            img = cv2.imdecode(np.frombuffer(Adb.exec_out('screencap -p'), dtype=np.uint8), bgr)
         return img
 
     @classmethod
@@ -65,7 +65,7 @@ class Elper:
         match = cv2.matchTemplate(self.CURRENT_SCREEN, img_template, cv2.TM_CCOEFF_NORMED)
         coords = np.where(match >= similarity)
         coords = list(zip(coords[1], coords[0]))
-        fixed_coords = self.fix_coords([Coordinate(x, y) for x, y in coords])
+        fixed_coords = self.__fix_coords([Coordinate(x, y) for x, y in coords])
         if fixed_coords:
             return fixed_coords
         return []
@@ -82,7 +82,8 @@ class Elper:
             return []
 
     @classmethod
-    def find(self, template, mode=0, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, crop_from=None, crop_to=None, update_screen=True):
+    def find(self, template, mode=0, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE,
+            crop_from=None, crop_to=None, update_screen=True):
         result = []
         if update_screen or not self.CURRENT_SCREEN.any():
             self.__update_screen(crop_from=crop_from, crop_to=crop_to)
@@ -95,6 +96,7 @@ class Elper:
                     return result
             else:
                 result += self.__find_multi(template, sim_from)
+                result = self.__fix_coords(result)
             sim_from -= 0.01
         if update_screen:
             self.__delete_screen()
@@ -116,12 +118,17 @@ class Elper:
 
     @classmethod
     def find_closest(self, coords, coord):
+        coords = [(c.x, c.y) for c in coords]
+        coord = (coord.x, coord.y)
         x, y = coords[spatial.KDTree(coords).query(coord)[1]]
         return Coordinate(x, y)
     
     @classmethod
-    def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE, crop_from=None, crop_to=None, interval=0):
+    def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE,
+            crop_from=None, crop_to=None, interval=0, handler=lambda *x: None):
         while not self.find(template, sim_from=sim_from, sim_to=sim_to, crop_from=crop_from, crop_to=crop_to):
+            if handler():
+                return
             self.wait(interval)
 
     @classmethod
