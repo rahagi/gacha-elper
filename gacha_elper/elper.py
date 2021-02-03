@@ -23,6 +23,9 @@ class Coordinate:
 
     def __repr__(self):
         return f'({self.x}, {self.y})'
+    
+    def scale(self, n):
+        return Coordinate(self.x+n, self.y+n)
 
     def randomize(self, radius=3):
         self.x += randint(-radius, radius)
@@ -127,6 +130,14 @@ class Elper:
     def wait_until_find(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE,
             crop_from=None, crop_to=None, interval=0, handler=lambda *x: None):
         while not self.find(template, sim_from=sim_from, sim_to=sim_to, crop_from=crop_from, crop_to=crop_to):
+            if handler():
+                return
+            self.wait(interval)
+    
+    @classmethod
+    def wait_until_disappear(self, template, sim_from=SIMILARITY_VALUE, sim_to=SIMILARITY_VALUE,
+            crop_from=None, crop_to=None, interval=0, handler=lambda *x: None):
+        while self.find(template, sim_from=sim_from, sim_to=sim_to, crop_from=crop_from, crop_to=crop_to):
             if handler():
                 return
             self.wait(interval)
