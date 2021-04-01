@@ -183,7 +183,7 @@ class Elper:
         crop_from=None,
         crop_to=None,
         interval=0,
-        other_cond=lambda *x: None,
+        other_cond=lambda: None,
     ):
         """
         Pause execution until `template` disappears from screen.
