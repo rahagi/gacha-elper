@@ -102,6 +102,8 @@ class Elper:
         `single` mode only return the `Coordinate` from the first occurence of `template`.
 
         `multi` mode return a list of `Coordinate`s of all occurences of `template`.
+
+        Return `[]` when nothing is found.
         """
         result = []
         sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
