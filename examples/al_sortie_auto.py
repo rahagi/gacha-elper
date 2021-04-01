@@ -19,19 +19,19 @@ elp = Elp(find_path="./assets")
 
 def wait_until_main():
     elp.wait_until_find(
-        "auto_search", crop_from=Coord(930, 530), crop_to=Coord(1024, 630)
+        "auto_search.png", crop_from=Coord(930, 530), crop_to=Coord(1024, 630)
     )
 
 
 def is_dock_full():
-    return elp.find("sort", crop_from=Coord(273, 444), crop_to=Coord(430, 510))
+    return elp.find("sort.png", crop_from=Coord(273, 444), crop_to=Coord(430, 510))
 
 
 def retire_ship():
     print("Retiring ship...")
     elp.wait(0.75)
     elp.tap(Button.SORT, 1.7, randomize=False)
-    elp.wait_until_find("qr")
+    elp.wait_until_find("qr.png")
     elp.wait(1)
     elp.tap(Button.QR, randomize=False)
     elp.tap(Coord(808, 598))  # confirm2
@@ -45,7 +45,9 @@ def retire_ship():
 
 
 def battle():
-    while not elp.find("continue", crop_from=Coord(630, 480), crop_to=Coord(780, 550)):
+    while not elp.find(
+        "continue.png", crop_from=Coord(630, 480), crop_to=Coord(780, 550)
+    ):
         if is_dock_full():
             retire_ship()
             elp.tap(Button.AUTO_SEARCH)
