@@ -1,6 +1,10 @@
 import subprocess
 
 
+class AdbError(Exception):
+    pass
+
+
 class Adb:
     """
     Wrapper class for some of `adb`'s core functionalities.
@@ -9,8 +13,13 @@ class Adb:
     @classmethod
     def __run_cmd(cls, cmd: str):
         if not cls.list_devices():
-            raise Exception("No emulator/device")
-        return subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE).communicate()[0]
+            raise AdbError("No emulator/device")
+        try:
+            return subprocess.Popen(
+                cmd.split(" "), stdout=subprocess.PIPE
+            ).communicate()[0]
+        except FileNotFoundError:
+            raise AdbError("adb is not found in your PATH") from None
 
     @classmethod
     def list_devices(cls):
