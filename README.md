@@ -19,4 +19,4 @@ see [LICENSE](https://github.com/cytopz/gacha-elper/blob/master/LICENSE)
 
 ## TODO
 
-- [ ] Using my own implementation of template matching to actually make it small.
+- [ ] Use my own implementation of template matching to actually make it small.
