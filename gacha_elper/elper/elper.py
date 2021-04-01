@@ -99,9 +99,9 @@ class Elper:
         This will capture any occurence with similarty score from
         `sim_from` to `sim_to` where `sim_to` <= `sim_from`.
 
-        `single` mode only returns the `Coordinate` from the first occurence of `template`.
+        `single` mode only return the `Coordinate` from the first occurence of `template`.
 
-        `multi` mode returns a list of `Coordinate`s of all occurences of `template`.
+        `multi` mode return a list of `Coordinate`s of all occurences of `template`.
         """
         result = []
         sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
@@ -184,7 +184,7 @@ class Elper:
         other_cond=lambda *x: None,
     ):
         """
-        Pause execution until `template` disappears on screen.
+        Pause execution until `template` disappears from screen.
         If `other_cond` is provided it will get called on
         every iteration and stops this method when it returns `True`.
 
@@ -213,8 +213,8 @@ class Elper:
         return Coordinate(x, y)
 
     @staticmethod
-    def wait(duration: float):
+    def wait(secs: float):
         """
         Call `time.sleep` with the amount of `duration`.
         """
-        time.sleep(duration)
+        time.sleep(secs)
