@@ -17,9 +17,9 @@ from gacha_elper.elper import Elper as Elp
 from gacha_elper.elper import Coordinate as Coord
 ...
 ```
-See `examples`.
 
 The library itself is very small. using `help()` for each module alone is enough to see how it works.
+You can see `examples` to see it in more detail.
 
 ## License
 
