@@ -44,6 +44,11 @@ class Elper:
         except IndexError:
             return []
 
+    @staticmethod
+    def __validate_crop(crop_from: Coordinate, crop_to: Coordinate):
+        if (crop_from.x > crop_to.x) or (crop_from.y > crop_to.y):
+            raise Exception("Invalid crop bounding box")
+
     def __validate_sim(self, sim_from, sim_to):
         if not sim_from:
             sim_from = self.similarity_value
@@ -56,6 +61,7 @@ class Elper:
     def __update_screen(self, bgr=0, crop_from=None, crop_to=None):
         self.current_screen = self.__get_current_screen(bgr)
         if crop_from and crop_to:
+            self.__validate_crop(crop_from, crop_to)
             self.current_screen = self.current_screen[
                 crop_from.y : crop_to.y, crop_from.x : crop_to.x
             ]
