@@ -2,6 +2,14 @@
 
 Small automation library to help automate repetitive tasks in mobile (Android) video games.
 
+## Installation
+
+You can install the package via `pip`
+
+```bash
+$ pip install gacha-elper
+```
+
 ## Usage
 
 ```python
