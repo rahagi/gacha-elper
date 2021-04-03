@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from typing import List
+from typing import List, Optional, Callable
 import cv2
 import numpy as np
 from scipy import spatial
@@ -93,13 +93,13 @@ class Elper:
     def find(
         self,
         template: str,
-        mode="single",
-        sim_from=None,
-        sim_to=None,
-        crop_from=None,
-        crop_to=None,
-        update_screen=True,
-    ):
+        mode: str = "single",
+        sim_from: Optional[float] = None,
+        sim_to: Optional[float] = None,
+        crop_from: Optional[Coordinate] = None,
+        crop_to: Optional[Coordinate] = None,
+        update_screen: bool = True,
+    ) -> List[Optional[Coordinate]]:
         """
         Find sub-image `template` in current screen with template matching.
         This will capture any occurence with similarty score from
@@ -132,7 +132,13 @@ class Elper:
             self.__delete_screen()
         return result
 
-    def tap(self, coord: Coordinate, delay=1.5, randomize=True, random_radius=15):
+    def tap(
+        self,
+        coord: Coordinate,
+        delay: float = 1.5,
+        randomize: bool = True,
+        random_radius: int = 15,
+    ):
         """
         Execute `input tap` command from `adb` and
         wait for the amount of seconds defined in `delay`.
@@ -142,7 +148,13 @@ class Elper:
         Adb.exec_out(f"input tap {coord.x} {coord.y}")
         self.wait(delay)
 
-    def swipe(self, coord1: Coordinate, coord2: Coordinate, duration=250, delay=1.5):
+    def swipe(
+        self,
+        coord1: Coordinate,
+        coord2: Coordinate,
+        duration: float = 250,
+        delay: float = 1.5,
+    ):
         """
         Execute `input swipe` command from `adb` and
         wait for the amount of seconds defined in `delay`.
@@ -155,12 +167,12 @@ class Elper:
     def wait_until_find(
         self,
         template: str,
-        sim_from=None,
-        sim_to=None,
-        crop_from=None,
-        crop_to=None,
-        interval=0,
-        other_cond=lambda: None,
+        sim_from: Optional[float] = None,
+        sim_to: Optional[float] = None,
+        crop_from: Optional[Coordinate] = None,
+        crop_to: Optional[Coordinate] = None,
+        interval: float = 0,
+        other_cond: Callable = lambda: None,
     ):
         """
         Pause execution until `template` appears on screen.
@@ -184,12 +196,12 @@ class Elper:
     def wait_until_disappear(
         self,
         template: str,
-        sim_from=None,
-        sim_to=None,
-        crop_from=None,
-        crop_to=None,
-        interval=0,
-        other_cond=lambda: None,
+        sim_from: Optional[float] = None,
+        sim_to: Optional[float] = None,
+        crop_from: Optional[Coordinate] = None,
+        crop_to: Optional[Coordinate] = None,
+        interval: float = 0,
+        other_cond: Callable = lambda: None,
     ):
         """
         Pause execution until `template` disappears from screen.
@@ -211,7 +223,7 @@ class Elper:
             self.wait(interval)
 
     @staticmethod
-    def find_closest(coords: List[Coordinate], coord: Coordinate):
+    def find_closest(coords: List[Coordinate], coord: Coordinate) -> Coordinate:
         """
         Find the closest coordinate for `coord` from list of coordinates in `coords`.
         """
