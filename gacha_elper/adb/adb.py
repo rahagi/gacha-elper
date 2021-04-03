@@ -24,7 +24,10 @@ class Adb:
     @classmethod
     def list_devices(cls):
         cmd = "adb devices"
-        devices = cls.__run_cmd(cmd)
+        devices = subprocess.Popen(
+            cmd.split(" "), stdout=subprocess.PIPE
+        ).communicate()[0]
+
         return [
             x.replace("\t", " ")
             for x in devices.decode("utf-8").replace("\n\n", "").split("\n")

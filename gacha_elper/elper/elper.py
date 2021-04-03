@@ -72,7 +72,9 @@ class Elper:
     def __find(self, template, similarity=None):
         similarity = similarity if similarity else self.similarity_value
         img_template = cv2.imread(f"{self.find_path}/{template}", 0)
-        match = cv2.matchTemplate(self.find_path, img_template, cv2.TM_CCOEFF_NORMED)
+        match = cv2.matchTemplate(
+            self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
+        )
         value, coord = cv2.minMaxLoc(match)[1], cv2.minMaxLoc(match)[3]
         if value >= similarity:
             return Coordinate(coord[0], coord[1])
