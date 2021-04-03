@@ -235,6 +235,6 @@ class Elper:
     @staticmethod
     def wait(secs: float):
         """
-        Call `time.sleep` with the amount of `duration`.
+        Call `time.sleep` with the amount of `secs`.
         """
         time.sleep(secs)
