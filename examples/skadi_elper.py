@@ -1,3 +1,7 @@
+"""
+Emulator settings:
+ - Display: 1280x720 240 DPI
+"""
 from gacha_elper.elper import Elper as Elp
 from gacha_elper.elper import Coordinate as Coord
 
