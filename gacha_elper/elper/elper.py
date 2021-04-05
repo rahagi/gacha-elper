@@ -69,8 +69,7 @@ class Elper:
     def __delete_screen(self):
         self.current_screen = np.array([[]])
 
-    def __find(self, template, similarity=None):
-        similarity = similarity if similarity else self.similarity_value
+    def __find(self, template, similarity):
         img_template = cv2.imread(f"{self.find_path}/{template}", 0)
         match = cv2.matchTemplate(
             self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
@@ -80,7 +79,7 @@ class Elper:
             return Coordinate(coord[0], coord[1])
         return None
 
-    def __find_multi(self, template, similarity=None):
+    def __find_multi(self, template, similarity):
         img_template = cv2.imread(f"{self.find_path}/{template}", 0)
         match = cv2.matchTemplate(
             self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
