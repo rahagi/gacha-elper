@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from gacha_elper.elper import Coordinate as Coord
 from gacha_elper.elper import Elper as Elp
@@ -11,7 +12,7 @@ class Button:
     SORT = Coord(345, 500)
     QR = Coord(614, 669)
     AUTO_SEARCH = Coord(1000, 590)
-    CONTINUE = Coord(700, 520)
+    CONTINUE = Coord(740, 560)
 
 
 elp = Elp(find_path="./assets")
@@ -45,13 +46,18 @@ def retire_ship():
 
 
 def battle():
-    while not elp.find(
-        "continue.png", crop_from=Coord(630, 480), crop_to=Coord(780, 550)
-    ):
+    def handle_full_dock():
         if is_dock_full():
             retire_ship()
             elp.tap(Button.AUTO_SEARCH)
-        elp.wait(1.5)
+
+    elp.wait_until_find(
+        "continue.png",
+        crop_from=Coord(200, 0),
+        crop_to=Coord(810, 720),
+        other_cond=handle_full_dock,
+    )
+    return elp.find("continue.png")
 
 
 if __name__ == "__main__":
@@ -60,8 +66,8 @@ if __name__ == "__main__":
     print("entered a map")
     try:
         while True:
-            battle()
-            elp.tap(Button.CONTINUE)
+            continue_button = battle()
+            elp.tap(continue_button, randomize=False)
             if is_dock_full():
                 retire_ship()
                 elp.tap(Button.GO_1)
