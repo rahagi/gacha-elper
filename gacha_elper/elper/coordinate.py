@@ -1,3 +1,4 @@
+from __future__ import annotations
 from random import randint
 from scipy import spatial
 
@@ -22,10 +23,10 @@ class Coordinate:
     def __repr__(self):
         return f"({self.x}, {self.y})"
 
-    def randomize(self, radius=3):
+    def randomize(self, radius: int = 3) -> Coordinate:
         """
-        Return new `Coordinate` with randomized x and y value within `radius`.
+        Return new `Coordinate` with randomized `x` and `y` value within `radius`.
         """
         x = self.x + randint(-radius, radius)
         y = self.y + randint(-radius, radius)
-        return Coordinate(x, y)
+        return __class__(x, y)

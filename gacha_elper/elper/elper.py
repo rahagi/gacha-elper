@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from typing import List, Optional, Callable
+from typing import List, Literal, Optional, Callable
 import cv2
 import numpy as np
 from scipy import spatial
@@ -91,6 +91,31 @@ class Elper:
         if fixed_coords:
             return fixed_coords
         return []
+
+    def __wait_until(
+        self,
+        what: Literal["find", "disappear"],
+        template: str,
+        sim_from: Optional[float] = None,
+        sim_to: Optional[float] = None,
+        crop_from: Optional[Coordinate] = None,
+        crop_to: Optional[Coordinate] = None,
+        interval: float = 0,
+        other_cond: Callable = lambda: None,
+    ):
+        sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
+        while (
+            not self.find(
+                template,
+                sim_from=sim_from,
+                sim_to=sim_to,
+                crop_from=crop_from,
+                crop_to=crop_to,
+            )
+        ) == (what == "find"):
+            if other_cond():
+                return
+            self.wait(interval)
 
     def find(
         self,
@@ -183,17 +208,16 @@ class Elper:
 
         `other_cond` must return bool value.
         """
-        sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
-        while not self.find(
-            template,
+        return self.__wait_until(
+            what="find",
+            template=template,
             sim_from=sim_from,
             sim_to=sim_to,
             crop_from=crop_from,
             crop_to=crop_to,
-        ):
-            if other_cond():
-                return
-            self.wait(interval)
+            interval=interval,
+            other_cond=other_cond,
+        )
 
     def wait_until_disappear(
         self,
@@ -212,17 +236,16 @@ class Elper:
 
         `other_cond` must return bool value.
         """
-        sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
-        while self.find(
-            template,
+        return self.__wait_until(
+            what="disappear",
+            template=template,
             sim_from=sim_from,
             sim_to=sim_to,
             crop_from=crop_from,
             crop_to=crop_to,
-        ):
-            if other_cond():
-                return
-            self.wait(interval)
+            interval=interval,
+            other_cond=other_cond,
+        )
 
     @staticmethod
     def find_closest(coords: List[Coordinate], coord: Coordinate) -> Coordinate:

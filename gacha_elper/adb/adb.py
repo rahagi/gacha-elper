@@ -1,4 +1,5 @@
 import subprocess
+from typing import List, Optional
 
 
 class AdbError(Exception):
@@ -22,7 +23,7 @@ class Adb:
             raise AdbError("adb is not found in your PATH") from None
 
     @classmethod
-    def list_devices(cls):
+    def list_devices(cls) -> List[Optional[str]]:
         cmd = "adb devices"
         devices = subprocess.Popen(
             cmd.split(" "), stdout=subprocess.PIPE
