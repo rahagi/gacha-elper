@@ -23,6 +23,12 @@ class Coordinate:
     def __repr__(self):
         return f"({self.x}, {self.y})"
 
+    def transform(self, x: int, y: int) -> Coordinate:
+        """
+        Return new `Coordinate` with transformed `x` and `y` value
+        """
+        return __class__(self.x + x, self.y + y)
+
     def randomize(self, radius: int = 3) -> Coordinate:
         """
         Return new `Coordinate` with randomized `x` and `y` value within `radius`.
