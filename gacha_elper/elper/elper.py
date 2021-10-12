@@ -101,9 +101,11 @@ class Elper:
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
         interval: float = 0,
+        timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
         sim_from, sim_to = self.__validate_sim(sim_from, sim_to)
+        start_time = time.time()
         while (
             not self.find(
                 template,
@@ -113,7 +115,10 @@ class Elper:
                 crop_to=crop_to,
             )
         ) == (what == "find"):
+            time_diff = time.time() - start_time
             if other_cond():
+                return
+            if time_diff > timeout > 0:
                 return
             self.wait(interval)
 
@@ -199,12 +204,15 @@ class Elper:
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
         interval: float = 0,
+        timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
         """
         Pause execution until `template` appears on screen.
         If `other_cond` is provided it will get called on
         every iteration and stops this method when it returns `True`.
+
+        If `timeout` is < 0, it means there is no timeout.
 
         `other_cond` must return bool value.
         """
@@ -216,6 +224,7 @@ class Elper:
             crop_from=crop_from,
             crop_to=crop_to,
             interval=interval,
+            timeout=timeout,
             other_cond=other_cond,
         )
 
@@ -227,12 +236,15 @@ class Elper:
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
         interval: float = 0,
+        timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
         """
         Pause execution until `template` disappears from screen.
         If `other_cond` is provided it will get called on
         every iteration and stops this method when it returns `True`.
+
+        If `timeout` is < 0, it means there is no timeout.
 
         `other_cond` must return bool value.
         """
@@ -244,6 +256,7 @@ class Elper:
             crop_from=crop_from,
             crop_to=crop_to,
             interval=interval,
+            timeout=timeout,
             other_cond=other_cond,
         )
 
