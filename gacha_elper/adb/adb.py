@@ -12,12 +12,12 @@ class Adb:
     """
 
     @classmethod
-    def __run_cmd(cls, cmd: str):
-        if not cls.list_devices():
+    def __run_cmd(cls, cmd: str, check_devices: bool = True) -> str:
+        if check_devices and not cls.list_devices():
             raise AdbError("No emulator/device")
         try:
             with subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE) as pipe:
-                return pipe.communicate()[0]
+                return pipe.communicate()[0].decode("utf-8")
         except FileNotFoundError:
             raise AdbError("adb is not found in your PATH") from None
 
@@ -27,13 +27,11 @@ class Adb:
         Run `adb devices`
         """
         cmd = "adb devices"
-        with subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE) as pipe:
-            devices = pipe.communicate()[0]
+        devices = cls.__run_cmd(cmd, check_devices=False)
 
-        return [
-            x.replace("\t", " ")
-            for x in devices.decode("utf-8").replace("\n\n", "").split("\n")
-        ][1:]
+        return [d.replace("\t", " ") for d in devices.replace("\n\n", "").split("\n")][
+            1:
+        ]
 
     @classmethod
     def connect(cls, address: str, port: str):
