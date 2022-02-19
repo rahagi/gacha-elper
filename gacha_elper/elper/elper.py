@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from typing import List, Literal, Optional, Callable
+from typing import List, Literal, Optional, Callable, Union
 import cv2
 import numpy as np
 from scipy import spatial
@@ -136,7 +136,7 @@ class Elper:
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
         update_screen: bool = True,
-    ) -> List[Optional[Coordinate]]:
+    ) -> Union[List[Optional[Coordinate]], Coordinate]:
         """
         Find sub-image `template` in current screen with template matching.
         This will capture any occurence with similarty score from
