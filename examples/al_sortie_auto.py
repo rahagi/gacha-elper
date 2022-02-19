@@ -4,6 +4,9 @@ from gacha_elper.elper import Coordinate as Coord
 from gacha_elper.elper import Elper as Elp
 
 
+REUSE_DOUBLE_REWARDS = True
+
+
 class Button:
     BACK = Coord(50, 45)
     GO_1 = Coord(759, 487)
@@ -67,6 +70,8 @@ if __name__ == "__main__":
     try:
         while True:
             continue_button = battle()
+            if REUSE_DOUBLE_REWARDS:
+                elp.tap(continue_button.transform(-15, 5))
             elp.tap(continue_button, randomize=False)
             if is_dock_full():
                 retire_ship()
