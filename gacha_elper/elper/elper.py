@@ -130,7 +130,7 @@ class Elper:
     def find(
         self,
         template: str,
-        mode: str = "single",
+        mode: Literal["single", "multi"] = "single",
         sim_from: Optional[float] = None,
         sim_to: Optional[float] = None,
         crop_from: Optional[Coordinate] = None,
