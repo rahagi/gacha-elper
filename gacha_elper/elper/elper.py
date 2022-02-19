@@ -7,6 +7,11 @@ import numpy as np
 from scipy import spatial
 from .coordinate import Coordinate
 from ..adb import Adb
+from ..error import (
+    ElperInvalidFindMode,
+    ElperInvalidSimilarityRange,
+    ElperInvalidCropBoundingBox,
+)
 
 
 class Elper:
@@ -47,7 +52,7 @@ class Elper:
     @staticmethod
     def __validate_crop(crop_from: Coordinate, crop_to: Coordinate):
         if (crop_from.x > crop_to.x) or (crop_from.y > crop_to.y):
-            raise Exception("Invalid crop bounding box")
+            raise ElperInvalidCropBoundingBox()
 
     def __validate_sim(self, sim_from, sim_to):
         if not sim_from:
@@ -55,7 +60,7 @@ class Elper:
         if not sim_to:
             sim_to = self.similarity_value
         if sim_to > sim_from:
-            raise Exception("Invalid similarity range")
+            raise ElperInvalidSimilarityRange()
         return (sim_from, sim_to)
 
     def __update_screen(self, bgr=0, crop_from=None, crop_to=None):
@@ -158,7 +163,7 @@ class Elper:
                 result += self.__find_multi(template, sim_from)
                 result = self.__fix_coords(result)
             else:
-                raise Exception("Invalid find mode")
+                raise ElperInvalidFindMode()
             sim_from -= 0.01
         if update_screen:
             self.__delete_screen()

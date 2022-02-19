@@ -1,5 +1,6 @@
 import subprocess
 from typing import List, Optional
+from ..error import AdbNotFound, AdbNoDevices
 
 
 class AdbError(Exception):
@@ -14,12 +15,12 @@ class Adb:
     @classmethod
     def __run_cmd(cls, cmd: str, check_devices: bool = True) -> str:
         if check_devices and not cls.list_devices():
-            raise AdbError("No emulator/device")
+            raise AdbNoDevices()
         try:
             with subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE) as pipe:
                 return pipe.communicate()[0].decode("utf-8")
         except FileNotFoundError:
-            raise AdbError("adb is not found in your PATH") from None
+            raise AdbNotFound()
 
     @classmethod
     def list_devices(cls) -> List[Optional[str]]:
