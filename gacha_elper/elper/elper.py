@@ -5,6 +5,8 @@ from typing import List, Literal, Optional, Callable, Union
 import cv2
 import numpy as np
 from scipy import spatial
+
+from gacha_elper.elper.screencap import Screencap
 from .coordinate import Coordinate
 from ..adb import Adb
 from ..error import (
@@ -28,15 +30,23 @@ class Elper:
         self.similarity_value = similarity_value
         self.find_path = find_path or (os.path.split(sys.argv[0])[0] or ".")
         self.current_screen = np.array([[]])
+        self.template_cache = {}
+
+        for template in os.listdir(self.find_path):
+            print(f"loading template: {template}")
+            self.template_cache[template] = cv2.imread(
+                f"{self.find_path}/{template}", 0
+            )
 
     @staticmethod
-    def __get_current_screen(bgr=0):
-        img = None
-        while img is None:
-            img = cv2.imdecode(
-                np.frombuffer(Adb.exec_out("screencap -p"), dtype=np.uint8), bgr
-            )
-        return img
+    def __get_current_screen():
+        screen = None
+        i = 1
+        while screen is None:
+            print(f"attemp {i} to get screen")
+            screen = Screencap.capture()
+            i += 1
+        return screen
 
     @staticmethod
     def __fix_coords(coords):
@@ -63,8 +73,8 @@ class Elper:
             raise ElperInvalidSimilarityRange()
         return (sim_from, sim_to)
 
-    def __update_screen(self, bgr=0, crop_from=None, crop_to=None):
-        self.current_screen = self.__get_current_screen(bgr)
+    def __update_screen(self, crop_from=None, crop_to=None):
+        self.current_screen = self.__get_current_screen()
         if crop_from and crop_to:
             self.__validate_crop(crop_from, crop_to)
             self.current_screen = self.current_screen[
@@ -76,17 +86,22 @@ class Elper:
 
     def __find(self, template, similarity=None):
         similarity = similarity if similarity else self.similarity_value
-        img_template = cv2.imread(f"{self.find_path}/{template}", 0)
-        match = cv2.matchTemplate(
-            self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
-        )
+        # img_template = cv2.imread(f"{self.find_path}/{template}", 0)
+        img_template = self.template_cache[template]
+        try:
+            match = cv2.matchTemplate(
+                self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
+            )
+        except: 
+            return None
         value, coord = cv2.minMaxLoc(match)[1], cv2.minMaxLoc(match)[3]
         if value >= similarity:
             return Coordinate(coord[0], coord[1])
         return None
 
     def __find_multi(self, template, similarity=None):
-        img_template = cv2.imread(f"{self.find_path}/{template}", 0)
+        # img_template = cv2.imread(f"{self.find_path}/{template}", 0)
+        img_template = self.template_cache[template]
         match = cv2.matchTemplate(
             self.current_screen, img_template, cv2.TM_CCOEFF_NORMED
         )
@@ -105,7 +120,7 @@ class Elper:
         sim_to: Optional[float] = None,
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
-        interval: float = 0,
+        interval: float = 2,
         timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
@@ -182,7 +197,7 @@ class Elper:
         """
         if randomize:
             coord = coord.randomize(random_radius)
-        Adb.exec_out(f"input tap {coord.x} {coord.y}")
+        Adb.shell(f"input tap {coord.x} {coord.y}")
         self.wait(delay)
 
     def swipe(
@@ -196,7 +211,7 @@ class Elper:
         Execute `input swipe` command from `adb` and
         wait for the amount of seconds defined in `delay`.
         """
-        Adb.exec_out(
+        Adb.shell(
             f"input swipe {coord1.x} {coord1.y} {coord2.x} {coord2.y} {duration}"
         )
         self.wait(delay)
@@ -208,7 +223,7 @@ class Elper:
         sim_to: Optional[float] = None,
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
-        interval: float = 0,
+        interval: float = 2,
         timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
@@ -240,7 +255,7 @@ class Elper:
         sim_to: Optional[float] = None,
         crop_from: Optional[Coordinate] = None,
         crop_to: Optional[Coordinate] = None,
-        interval: float = 0,
+        interval: float = 2,
         timeout: float = -1,
         other_cond: Callable = lambda: None,
     ):
